@@ -55,6 +55,7 @@ const generatedDirs = [
   join(docsDir, 'design-system'),
   join(docsDir, 'patterns'),
   join(docsDir, 'workspace'),
+  join(docsDir, 'knowledge'),
   dataDir,
 ]
 for (const dir of generatedDirs) {
@@ -69,6 +70,7 @@ const sectionMappings = [
   ['01-design-system', 'design-system'],
   ['02-patterns',      'patterns'],
   ['08-workspace',     'workspace'],
+  ['09-knowledge',     'knowledge'],
 ]
 
 for (const [srcSection, dstSection] of sectionMappings) {
