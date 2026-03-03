@@ -1,0 +1,32 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Generated from vault submodule — rebuilt on npm run dev/build
+src/content/docs/design-system/
+src/content/docs/patterns/
+src/content/docs/workspace/
+src/content/docs/status.md
+src/data/tokens/

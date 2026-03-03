@@ -1,0 +1,18 @@
+{
+  "name": "ds-uixray-tech",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "CoreDS — UIXRay Design System documentation site",
+  "scripts": {
+    "dev": "node scripts/sync-content.mjs && astro dev",
+    "build": "node scripts/sync-content.mjs && astro build",
+    "preview": "astro preview",
+    "sync": "node scripts/sync-content.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.37.6",
+    "astro": "^5.6.1",
+    "sharp": "^0.34.2"
+  }
+}

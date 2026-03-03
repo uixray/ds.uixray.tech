@@ -1,0 +1,62 @@
+---
+title: CoreDS — UIXRay Design System
+description: Дизайн-система, библиотека UX-паттернов и философия работы дизайнера. Открытый проект от Ray (@uixray).
+template: splash
+hero:
+  tagline: Компоненты · Паттерны · Философия
+  image:
+    file: ../../assets/coreds-logo.svg
+  actions:
+    - text: Design System
+      link: /design-system/
+      icon: right-arrow
+      variant: primary
+    - text: GitHub
+      link: https://github.com/uixray/coreds-vault
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components'
+
+## Что внутри
+
+<CardGrid>
+  <Card title="Design System" icon="seti:css">
+    Токены, компоненты, темы и архитектурные решения CoreDS.
+  </Card>
+  <Card title="UX Patterns" icon="puzzle">
+    Библиотека паттернов взаимодействия — фундаментальные, платформенные, доменные.
+  </Card>
+  <Card title="Workspace" icon="laptop">
+    9 инструментов для оптимизации рабочего процесса: Figma-плагины, AI-сервисы, системные утилиты.
+  </Card>
+  <Card title="Design Tokens" icon="seti:json">
+    DTCG-совместимые токены — цвет, типографика, спейсинг. Визуальная галерея.
+  </Card>
+</CardGrid>
+
+## Быстрый старт
+
+<CardGrid>
+  <LinkCard
+    title="Philosophy"
+    href="/workspace/philosophy/designer-as-creative-director/"
+    description="Манифест «Дизайнер как Творческий Директор» — рабочая философия и стек инструментов."
+  />
+  <LinkCard
+    title="Project Status"
+    href="/status/"
+    description="Текущий статус проекта, roadmap и принятые решения."
+  />
+  <LinkCard
+    title="Design Tokens"
+    href="/tokens/"
+    description="Визуальная галерея CoreDS токенов из DTCG JSON-источника."
+  />
+  <LinkCard
+    title="Vault on GitHub"
+    href="https://github.com/uixray/coreds-vault"
+    description="Исходный Obsidian vault — открытый и публичный."
+  />
+</CardGrid>

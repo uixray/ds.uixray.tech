@@ -1,0 +1,45 @@
+/* CoreDS → Starlight theme overrides */
+
+/* Inter font (loaded via <head> in astro.config.mjs) */
+:root {
+  --sl-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --sl-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* CoreDS Blue palette applied to Starlight accent */
+:root,
+::backdrop {
+  --sl-color-accent-low:  #eff6ff; /* blue-50  */
+  --sl-color-accent:      #2563eb; /* blue-600 */
+  --sl-color-accent-high: #1d4ed8; /* blue-700 */
+}
+
+/* Dark mode accents */
+:root[data-theme='dark'],
+[data-theme='dark'] ::backdrop {
+  --sl-color-accent-low:  #172554; /* blue-950 */
+  --sl-color-accent:      #60a5fa; /* blue-400 */
+  --sl-color-accent-high: #93c5fd; /* blue-300 */
+}
+
+/* Slightly tighter line height for content */
+.sl-markdown-content {
+  line-height: 1.7;
+}
+
+/* Style vault frontmatter status badges */
+.sl-markdown-content code {
+  border-radius: 4px;
+}
+
+/* Improve table readability */
+.sl-markdown-content table {
+  font-size: 0.9rem;
+}
+
+/* Sidebar: reduce label size for long vault section names */
+.sidebar-content .group-label span {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,35 @@
+name: Update vault submodule
+
+on:
+  # Weekly auto-update every Monday at 08:00 UTC
+  schedule:
+    - cron: '0 8 * * 1'
+  # Manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  update-submodule:
+    name: Pull latest vault content
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update vault submodule to latest
+        run: git submodule update --remote vault
+
+      - name: Commit and push if vault changed
+        run: |
+          git config user.name  "CoreDS Bot"
+          git config user.email "bot@uixray.tech"
+          git add vault
+          git diff --staged --quiet && echo "No vault changes" || (
+            git commit -m "chore: update vault submodule [skip ci]"
+            git push
+          )

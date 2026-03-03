@@ -1,0 +1,288 @@
+---
+/**
+ * /tokens/ — CoreDS Design Tokens Visual Gallery
+ * Parses DTCG JSON from src/data/tokens/ (synced from vault/05-tokens/)
+ * and renders color swatches + spacing scale.
+ */
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
+import { readFileSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
+
+const dataDir = join(process.cwd(), 'src', 'data', 'tokens')
+
+function readJson(path) {
+  try {
+    return JSON.parse(readFileSync(path, 'utf-8'))
+  } catch {
+    return null
+  }
+}
+
+const coreColors   = readJson(join(dataDir, 'core', 'color.tokens.json'))
+const coreSpacing  = readJson(join(dataDir, 'core', 'spacing.tokens.json'))
+const semanticColors = readJson(join(dataDir, 'semantic', 'color.tokens.json'))
+
+// Flatten DTCG color tokens into a flat array: { name, value, group }
+function flattenColors(obj, prefix = '') {
+  const swatches = []
+  for (const [key, val] of Object.entries(obj)) {
+    if (key.startsWith('$')) continue
+    const fullKey = prefix ? `${prefix}.${key}` : key
+    if (val && typeof val === 'object' && '$value' in val) {
+      swatches.push({ name: fullKey, value: val['$value'] })
+    } else if (val && typeof val === 'object') {
+      swatches.push(...flattenColors(val, fullKey))
+    }
+  }
+  return swatches
+}
+
+// Resolve DTCG reference like {color.blue.600} → actual hex
+function resolveRef(value, primitives) {
+  if (typeof value !== 'string' || !value.startsWith('{')) return value
+  const path = value.slice(1, -1).split('.')
+  let current = primitives
+  for (const segment of path) {
+    current = current?.[segment]
+  }
+  return current?.['$value'] ?? value
+}
+
+const blueSwatches  = coreColors ? flattenColors({ color: { blue: coreColors.color.blue } }) : []
+const graySwatches  = coreColors ? flattenColors({ color: { gray: coreColors.color.gray } }) : []
+
+// Spacing tokens
+const spacingTokens = coreSpacing
+  ? Object.entries(coreSpacing.spacing ?? {})
+      .filter(([k]) => !k.startsWith('$'))
+      .map(([k, v]) => ({
+        name: `spacing.${k}`,
+        value: typeof v === 'object' && '$value' in v ? v['$value'] : String(v),
+        px: parseInt(typeof v === 'object' && '$value' in v ? v['$value'] : '0', 10),
+      }))
+  : []
+
+// Semantic color tokens resolved
+const semanticSurface  = semanticColors ? flattenColors({ color: { surface: semanticColors.color.surface } }) : []
+const semanticOnSurface = semanticColors ? flattenColors({ color: { 'on-surface': semanticColors.color['on-surface'] } }) : []
+const semanticAction   = semanticColors ? flattenColors({ color: { action: semanticColors.color.action } }) : []
+const semanticBorder   = semanticColors ? flattenColors({ color: { border: semanticColors.color.border } }) : []
+
+// Resolve refs using coreColors
+function resolveColor(value) {
+  return resolveRef(value, coreColors)
+}
+---
+
+<StarlightPage frontmatter={{
+  title: 'Design Tokens',
+  description: 'CoreDS DTCG-совместимые дизайн-токены: цвет, типографика, спейсинг.',
+}}>
+
+{!coreColors && (
+  <div class="not-content" style="background:#fef3c7;border:1px solid #d97706;border-radius:8px;padding:1rem;margin-bottom:2rem;color:#92400e">
+    <strong>⚠ Данные токенов недоступны.</strong>
+    Запусти <code>npm run sync</code> для синхронизации содержимого vault.
+  </div>
+)}
+
+## Primitive Colors
+
+### Blue
+
+<div class="token-grid">
+  {blueSwatches.map(s => (
+    <div class="swatch">
+      <div class="swatch-color" style={`background:${s.value}`}></div>
+      <div class="swatch-info">
+        <code>{s.name}</code>
+        <span>{s.value}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+### Gray
+
+<div class="token-grid">
+  {graySwatches.map(s => (
+    <div class="swatch">
+      <div class="swatch-color" style={`background:${s.value};border:1px solid #e5e7eb`}></div>
+      <div class="swatch-info">
+        <code>{s.name}</code>
+        <span>{s.value}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+---
+
+## Semantic Colors
+
+### Surface
+
+<div class="token-grid">
+  {semanticSurface.map(s => (
+    <div class="swatch">
+      <div class="swatch-color" style={`background:${resolveColor(s.value)};border:1px solid #e5e7eb`}></div>
+      <div class="swatch-info">
+        <code>{s.name}</code>
+        <span style="font-size:.75rem;color:#6b7280">{s.value}</span>
+        <span>{resolveColor(s.value)}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+### On Surface
+
+<div class="token-grid">
+  {semanticOnSurface.map(s => (
+    <div class="swatch">
+      <div class="swatch-color" style={`background:${resolveColor(s.value)};border:1px solid #e5e7eb`}></div>
+      <div class="swatch-info">
+        <code>{s.name}</code>
+        <span style="font-size:.75rem;color:#6b7280">{s.value}</span>
+        <span>{resolveColor(s.value)}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+### Action
+
+<div class="token-grid">
+  {semanticAction.map(s => (
+    <div class="swatch">
+      <div class="swatch-color" style={`background:${resolveColor(s.value)}`}></div>
+      <div class="swatch-info">
+        <code>{s.name}</code>
+        <span style="font-size:.75rem;color:#6b7280">{s.value}</span>
+        <span>{resolveColor(s.value)}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+### Border
+
+<div class="token-grid">
+  {semanticBorder.map(s => (
+    <div class="swatch">
+      <div class="swatch-color" style={`background:${resolveColor(s.value)};border:1px solid #e5e7eb`}></div>
+      <div class="swatch-info">
+        <code>{s.name}</code>
+        <span style="font-size:.75rem;color:#6b7280">{s.value}</span>
+        <span>{resolveColor(s.value)}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+---
+
+## Spacing Scale
+
+<div class="spacing-scale">
+  {spacingTokens.map(t => (
+    <div class="spacing-row">
+      <code class="spacing-name">{t.name}</code>
+      <span class="spacing-bar-wrap">
+        <span class="spacing-bar" style={`width:${Math.min(t.px * 3, 288)}px`}></span>
+      </span>
+      <span class="spacing-value">{t.value}</span>
+    </div>
+  ))}
+</div>
+
+</StarlightPage>
+
+<style>
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--sl-color-gray-5, #e5e7eb);
+  }
+
+  .swatch-color {
+    height: 64px;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .swatch-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.5rem 0.6rem;
+    background: var(--sl-color-bg-sidebar, #f9fafb);
+  }
+
+  .swatch-info code {
+    font-size: 0.7rem;
+    background: none;
+    padding: 0;
+    border: none;
+    color: var(--sl-color-text, #111);
+    word-break: break-all;
+  }
+
+  .swatch-info span {
+    font-size: 0.72rem;
+    color: var(--sl-color-gray-2, #6b7280);
+    font-family: var(--sl-font-mono);
+  }
+
+  /* Spacing scale */
+  .spacing-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .spacing-name {
+    min-width: 120px;
+    font-size: 0.8rem;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .spacing-bar-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .spacing-bar {
+    display: block;
+    height: 16px;
+    background: var(--sl-color-accent);
+    border-radius: 3px;
+    min-width: 2px;
+  }
+
+  .spacing-value {
+    min-width: 50px;
+    font-size: 0.8rem;
+    font-family: var(--sl-font-mono);
+    color: var(--sl-color-gray-2);
+    text-align: right;
+  }
+</style>
