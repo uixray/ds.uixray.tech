@@ -24,8 +24,13 @@ export default defineConfig({
       sidebar: [
         { label: 'Overview', link: '/' },
         {
+          label: 'Components',
+          autogenerate: { directory: 'components' },
+        },
+        {
           label: 'Design System',
           autogenerate: { directory: 'design-system' },
+          collapsed: true,
         },
         {
           label: 'UX Patterns',

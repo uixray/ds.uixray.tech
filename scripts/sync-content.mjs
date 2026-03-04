@@ -52,6 +52,7 @@ function copyDir(src, dst) {
 
 // ─── Clean generated directories ──────────────────────────────────────────────
 const generatedDirs = [
+  join(docsDir, 'components'),     // direct /components/ route (from 01-design-system/components/)
   join(docsDir, 'design-system'),
   join(docsDir, 'patterns'),
   join(docsDir, 'workspace'),
@@ -67,6 +68,9 @@ if (existsSync(statusDst)) rmSync(statusDst)
 
 // ─── Copy vault sections → src/content/docs/ ──────────────────────────────────
 const sectionMappings = [
+  // /components/{slug} — top-level route used by Figma plugin links and sidebar
+  ['01-design-system/components', 'components'],
+  // Full design-system tree (includes components/ again, that's fine — both routes work)
   ['01-design-system', 'design-system'],
   ['02-patterns',      'patterns'],
   ['08-workspace',     'workspace'],

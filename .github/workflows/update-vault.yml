@@ -6,6 +6,9 @@ on:
     - cron: '0 8 * * 1'
   # Manual trigger from GitHub Actions UI
   workflow_dispatch:
+  # Triggered automatically when coreds-vault is pushed to (via notify-docs.yml)
+  repository_dispatch:
+    types: [vault-updated]
 
 jobs:
   update-submodule:
