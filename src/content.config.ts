@@ -24,6 +24,8 @@ export const collections = {
         platforms: z.union([z.array(z.string()), z.string()]).optional(),
         github: z.string().optional(),
         category: z.string().optional(),
+        figma_link: z.string().optional(),
+        tier: z.union([z.number(), z.string()]).optional(),
       }),
     }),
   }),

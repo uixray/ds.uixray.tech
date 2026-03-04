@@ -1,0 +1,56 @@
+---
+import type { Props } from '@astrojs/starlight/props'
+import Default from '@astrojs/starlight/components/PageTitle.astro'
+
+const { entry } = Astro.props
+const data = entry?.data as Record<string, unknown> | undefined
+const type = data?.type as string | undefined
+const tier = data?.tier as string | number | undefined
+const status = data?.status as string | undefined
+const figmaLink = data?.figma_link as string | undefined
+
+const isComponent = type === 'component'
+const hasFigmaLink = !!figmaLink && figmaLink.trim() !== ''
+
+const embedUrl = hasFigmaLink
+  ? `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(figmaLink!)}`
+  : null
+
+const statusClass: Record<string, string> = {
+  seed:       'badge--seed',
+  draft:      'badge--draft',
+  stable:     'badge--stable',
+  deprecated: 'badge--deprecated',
+}
+const badgeClass = statusClass[status ?? ''] ?? 'badge--seed'
+---
+
+<Default {...Astro.props} />
+
+{isComponent && (
+  <div class="component-meta">
+    {tier !== undefined && tier !== null && (
+      <span class="badge badge--tier">Tier {tier}</span>
+    )}
+    {status && (
+      <span class={`badge badge--status ${badgeClass}`}>{status}</span>
+    )}
+    {hasFigmaLink && (
+      <a class="figma-link" href={figmaLink} target="_blank" rel="noopener noreferrer">
+        🎨 View in Figma
+      </a>
+    )}
+  </div>
+)}
+
+{isComponent && embedUrl && (
+  <div class="figma-embed-wrapper">
+    <iframe
+      src={embedUrl}
+      loading="lazy"
+      allowfullscreen
+      class="figma-embed"
+      title="Figma component preview"
+    ></iframe>
+  </div>
+)}

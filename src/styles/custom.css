@@ -43,3 +43,68 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+/* ── Component meta: badges + figma link ─────────────────────────────────── */
+
+.component-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -0.25rem 0 1.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.6;
+}
+
+.badge--tier {
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+.badge--seed       { background: #fef3c7; color: #92400e; }
+.badge--draft      { background: #dbeafe; color: #1e40af; }
+.badge--stable     { background: #d1fae5; color: #065f46; }
+.badge--deprecated { background: #fee2e2; color: #991b1b; }
+
+[data-theme='dark'] .badge--tier       { background: #172554; color: #93c5fd; }
+[data-theme='dark'] .badge--seed       { background: #451a03; color: #fcd34d; }
+[data-theme='dark'] .badge--draft      { background: #1e3a5f; color: #93c5fd; }
+[data-theme='dark'] .badge--stable     { background: #064e3b; color: #6ee7b7; }
+[data-theme='dark'] .badge--deprecated { background: #450a0a; color: #fca5a5; }
+
+.figma-link {
+  font-size: 0.8rem;
+  color: var(--sl-color-accent);
+  text-decoration: none;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.figma-link:hover { text-decoration: underline; }
+
+/* Figma embed */
+.figma-embed-wrapper {
+  margin: 0 0 2rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1e1e;
+}
+
+.figma-embed {
+  width: 100%;
+  height: 450px;
+  border: none;
+  display: block;
+}

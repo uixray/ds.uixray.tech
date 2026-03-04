@@ -78,6 +78,9 @@ export default defineConfig({
           },
         },
       ],
+      components: {
+        PageTitle: './src/components/PageTitle.astro',
+      },
       lastUpdated: true,
       pagination: true,
     }),
