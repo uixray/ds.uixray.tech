@@ -102,4 +102,24 @@ if (existsSync(tokensSrc)) {
   console.log('✓ 05-tokens → src/data/tokens')
 }
 
+// ─── Inject components/index.mdx (replaces Obsidian dataview index) ───────────
+// The vault index.md uses Obsidian dataview queries which don't render in Starlight.
+// We replace it with a Starlight-native MDX page using ComponentGrid.astro.
+const compIndexMd  = join(docsDir, 'components', 'index.md')
+const compIndexMdx = join(docsDir, 'components', 'index.mdx')
+if (existsSync(compIndexMd))  rmSync(compIndexMd)
+if (existsSync(compIndexMdx)) rmSync(compIndexMdx)
+writeFileSync(compIndexMdx,
+`---
+title: "Компоненты"
+description: "Библиотека UI-компонентов CoreDS — организована по тирам сложности"
+type: moc
+---
+
+import ComponentGrid from '../../../components/ComponentGrid.astro'
+
+<ComponentGrid />
+`)
+console.log('✓ components/index.md → index.mdx (ComponentGrid)')
+
 console.log('\n✅ Content sync complete\n')
