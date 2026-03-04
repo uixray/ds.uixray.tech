@@ -1,13 +1,13 @@
 ---
-import type { Props } from '@astrojs/starlight/props'
 import Default from '@astrojs/starlight/components/PageTitle.astro'
 
-const { entry } = Astro.props
-const data = entry?.data as Record<string, unknown> | undefined
-const type = data?.type as string | undefined
-const tier = data?.tier as string | number | undefined
-const status = data?.status as string | undefined
-const figmaLink = data?.figma_link as string | undefined
+// Starlight 0.37+: data is on Astro.locals.starlightRoute
+const routeData = Astro.locals.starlightRoute?.entry?.data as Record<string, unknown> | undefined
+
+const type = routeData?.type as string | undefined
+const tier = routeData?.tier as string | number | undefined
+const status = routeData?.status as string | undefined
+const figmaLink = routeData?.figma_link as string | undefined
 
 const isComponent = type === 'component'
 const hasFigmaLink = !!figmaLink && figmaLink.trim() !== ''

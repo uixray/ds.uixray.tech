@@ -1,0 +1,186 @@
+---
+import { getCollection } from 'astro:content'
+
+const allDocs = await getCollection('docs')
+
+type DocEntry = (typeof allDocs)[0]
+
+const components: DocEntry[] = allDocs
+  .filter(e =>
+    e.data.type === 'component' &&
+    e.id.startsWith('components/') &&
+    !e.id.endsWith('index')
+  )
+  .sort((a, b) => {
+    const tierA = Number(a.data.tier ?? 99)
+    const tierB = Number(b.data.tier ?? 99)
+    if (tierA !== tierB) return tierA - tierB
+    return String(a.data.title).localeCompare(String(b.data.title), 'ru')
+  })
+
+const tierMap = new Map<number, DocEntry[]>()
+for (const comp of components) {
+  const tier = Number(comp.data.tier ?? 0)
+  if (!tierMap.has(tier)) tierMap.set(tier, [])
+  tierMap.get(tier)!.push(comp)
+}
+
+const tierLabels: Record<number, string> = {
+  0: 'Uncategorized',
+  1: 'Primitives',
+  2: 'Composites',
+  3: 'Patterns',
+}
+
+const sortedTiers = [...tierMap.entries()].sort((a, b) => a[0] - b[0])
+
+const statusLabel: Record<string, string> = {
+  seed:       'Seed',
+  draft:      'Draft',
+  stable:     'Stable',
+  deprecated: 'Deprecated',
+}
+---
+
+{sortedTiers.map(([tier, comps]) => (
+  <section class="comp-tier-section">
+    <h2 class="comp-tier-heading">
+      Tier {tier} <span class="comp-tier-label">— {tierLabels[tier] ?? 'Components'}</span>
+    </h2>
+    <div class="comp-grid">
+      {comps.map(comp => {
+        const href = `/${comp.id}/`
+        const status = String(comp.data.status ?? '')
+        const platforms = comp.data.platforms
+        const platformList: string[] = Array.isArray(platforms)
+          ? platforms.map(String)
+          : platforms
+            ? [String(platforms)]
+            : []
+        const figmaLink = String(comp.data.figma_link ?? '')
+        const hasFigma = figmaLink.trim() !== ''
+
+        return (
+          <a href={href} class="comp-card">
+            <div class="comp-card__header">
+              <span class="comp-card__name">{comp.data.title}</span>
+              {hasFigma && (
+                <span class="comp-card__figma-dot" title="Figma ready" aria-label="Figma available">●</span>
+              )}
+            </div>
+            <div class="comp-card__footer">
+              {status && (
+                <span class={`badge badge--status badge--${status}`}>
+                  {statusLabel[status] ?? status}
+                </span>
+              )}
+              {platformList.length > 0 && (
+                <span class="comp-card__platforms">
+                  {platformList.join(' · ')}
+                </span>
+              )}
+            </div>
+          </a>
+        )
+      })}
+    </div>
+  </section>
+))}
+
+{components.length === 0 && (
+  <p class="comp-empty">Компоненты ещё не добавлены.</p>
+)}
+
+<style>
+  .comp-tier-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .comp-tier-heading {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sl-color-text-accent);
+    margin: 0 0 0.875rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--sl-color-hairline);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .comp-tier-label {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.7;
+  }
+
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 10px;
+  }
+
+  .comp-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 8px;
+    text-decoration: none;
+    background: var(--sl-color-bg);
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    min-height: 72px;
+  }
+
+  .comp-card:hover {
+    border-color: var(--sl-color-accent);
+    box-shadow: 0 2px 10px color-mix(in srgb, var(--sl-color-accent) 12%, transparent);
+    background: var(--sl-color-bg-sidebar);
+    text-decoration: none;
+  }
+
+  .comp-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .comp-card__name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sl-color-text);
+    text-transform: capitalize;
+    line-height: 1.3;
+  }
+
+  .comp-card__figma-dot {
+    font-size: 0.5rem;
+    color: var(--sl-color-accent);
+    flex-shrink: 0;
+    margin-top: 3px;
+    opacity: 0.8;
+  }
+
+  .comp-card__footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .comp-card__platforms {
+    font-size: 0.65rem;
+    color: var(--sl-color-text-accent);
+    opacity: 0.6;
+    font-weight: 500;
+  }
+
+  .comp-empty {
+    color: var(--sl-color-text-accent);
+    font-style: italic;
+    opacity: 0.6;
+  }
+</style>
